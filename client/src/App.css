@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap');
+
+.inconsolata-monte {
+    font-family: "Inconsolata", monospace;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 63.2;
+  }
+  
