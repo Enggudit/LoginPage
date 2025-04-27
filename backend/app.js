@@ -11,6 +11,8 @@ import { removeUnverifiedAccounts } from './services/removeUnverifiedAccount.js'
 
 export const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 config({path: './config/config.env'});
 

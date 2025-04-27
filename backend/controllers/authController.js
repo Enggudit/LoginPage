@@ -15,17 +15,31 @@ export const register = catchAsyncErrors(async (req, res, next) => {
         if (!name || !email || !password || !Fathername || !DOB) {
             return next(new ErrorHandler("Please enter all fields", 400));
         }
+        // Check if the DOB is valid and not more than 200 years old
+        
+        const dob = new Date(DOB);
+        const today = new Date();
+        const age = today.getFullYear() - dob.getFullYear();
+        const monthDifference = today.getMonth() - dob.getMonth();
+        if (age > 200 || dob > today) {
+            return next(new ErrorHandler("Invalid date of birth. It must be a valid date and not more than 200 years old", 400));
+        }
+        
         const isRegistered = await User.findOne({ email, accountVerified: true });
         if (isRegistered) {
             return next(new ErrorHandler("User already registered", 400));
         }
-        const registrationAttemptByUser = await User.find({ email, accountVerified: false });
-        if (registrationAttemptByUser.length >= 5) {
+        
+        const existingUser = await User.findOne({ email });
+        if (existingUser && existingUser.accountVerified === false) {
             return next(new ErrorHandler("User already registered, please verify your email", 400));
         }
+        
         if (password.length < 6) {
             return next(new ErrorHandler("Password must be at least 6 characters", 400));
         }
+        
+        
         const hashedPassword = await bcrypt.hash(password, 10); // changed cost factor from 50 to 10
         const user = await User.create({
             name,
@@ -118,10 +132,12 @@ export const login = catchAsyncErrors(async (req, res, next) => {
 });
 
 export const logout = catchAsyncErrors(async (req, res, next) => {
-
+    
     res.status(200).cookie("token", "",{
         expires: new Date(Date.now()),
         httpOnly: true,
+        
+
     }).json({
         sucess: true,
         message: "Logout successfully",

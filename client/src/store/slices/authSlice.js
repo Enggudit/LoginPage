@@ -140,19 +140,21 @@ export const resetAuthSlice =()=> (dispatch) =>{
     dispatch(authSlice.actions.resetAuthSlice());
 }
 
-export const register = (data) => async(dispatch) =>{
-    dispatch(authSlice.actions.registerRequest());
-    await axios.post("http://localhost:4000/api/v1/auth/register", data, {
-        withCredentials: true,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    }).then(res =>{
+export const register = (data) => async(dispatch) => {
+    try {
+        dispatch(authSlice.actions.registerRequest());
+        const res = await axios.post("http://localhost:4000/api/v1/auth/register", data, {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
         dispatch(authSlice.actions.registerSuccess(res.data));
-    }).catch(error =>{
+    } catch (error) {
         dispatch(authSlice.actions.registerFail(error.response.data.message));
-    })
+    }
 };
+
 
 export const otpVerification = (email, otp) => async(dispatch) =>{
     dispatch(authSlice.actions.otpVerificationRequest());

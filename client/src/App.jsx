@@ -21,7 +21,7 @@ function App() {
         <Route path="/login-update-password" element={<Updatepassword />} />
         <Route path="/login-update-profile" element={<EditProfile />} />
         <Route path="/forgot-password" element={<Forgotpassword />} />
-        <Route path="/forgot-password/email-otp" element={<EmailOtp />} />
+        <Route path="/Verify-otp/email-otp/:email" element={<EmailOtp />} />
         <Route path="/forgot-password/email-otp/reset-password" element={<ResetPassword />} />
       </Routes>
       <ToastContainer theme='dark' />
