@@ -9,8 +9,7 @@ function loginhome() {
   const {user, isAuthenticated} = useSelector( (state) => state.auth);
 
   if(!isAuthenticated) {
-    alert("Please login to access this page") 
-    return <Navigate to={"/Login-register-Page"} />
+    return <Navigate to={"/"} />
   }
     
 

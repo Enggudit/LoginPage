@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
-import { register, resetAuthSlice } from "../store/slices/authSlice";
+import { register, resetAuthSlice, login } from "../store/slices/authSlice";
 import { toast } from "react-toastify";
 
 const LiquidSlider = () => {
@@ -12,11 +12,12 @@ const LiquidSlider = () => {
   const [password, setPassword] = useState("");
   const [Fathername, setFathername] = useState("");
   const [DOB, setDOB] = useState("");
-
+  const [lemail, setLemail] = useState("");
+  const [lpassword, setLpassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
-  const { loading, error, message } = useSelector((state) => state.auth);
+  const { loading, error, message, user, isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const loadScripts = async () => {
@@ -58,24 +59,18 @@ const LiquidSlider = () => {
     data.append("DOB", DOB);
     data.append("email", email);
     data.append("password", password);
-
     dispatch(register(data));
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // You can implement login later here
-  };
+  
 
   useEffect(() => {
-    if (message) {
+    if (message && isLogin) {
       toast.success(message);
       navigate(`/Verify-otp/email-otp/${email}`);
       dispatch(resetAuthSlice());
     }
-    if (error) {
-      console.log(error);
-    
+    if (error && isLogin) {    
       if (Array.isArray(error)) {
         error.forEach((errMsg) => toast.error(errMsg));
       } else {
@@ -85,6 +80,33 @@ const LiquidSlider = () => {
       dispatch(resetAuthSlice());
     }
   }, [message, error, dispatch, navigate, email]);
+
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // You can implement login later here
+    const data = new FormData();
+    data.append("email", lemail);
+    data.append("password", lpassword);
+    dispatch(login(data));
+  };
+
+  useEffect(() => {
+    if (isAuthenticated && !isLogin) {
+      toast.success("Login successful");
+      navigate("/loginhome");
+      dispatch(resetAuthSlice());
+    }
+    if (error && !isLogin) {
+      if (Array.isArray(error)) {
+        error.forEach((errMsg) => toast.error(errMsg));
+      } else {
+        toast.error(error);
+      }
+    
+      dispatch(resetAuthSlice());
+    }
+  }, [error, dispatch, email, isAuthenticated]);
 
   return (
     <div className="flex justify-center items-center h-screen relative overflow-hidden">
@@ -162,12 +184,12 @@ const LiquidSlider = () => {
             <form onSubmit={handleLogin} className="flex flex-col justify-center items-center mt-2 w-full">
               <div className="flex flex-wrap justify-between items-center w-full mb-4">
                 <label className="text-lg mb-1">Email</label>
-                <input type="email" name="email" required placeholder="Enter your email" className="border border-zinc-900 rounded-md p-2 w-full" />
+                <input type="email" name="email" value={lemail} onChange={(e) => setLemail(e.target.value)} required placeholder="Enter your email" className="border border-zinc-900 rounded-md p-2 w-full" />
               </div>
 
               <div className="flex flex-wrap justify-between items-center w-full mb-4">
                 <label className="text-lg mb-1">Password</label>
-                <input type="password" name="password" required placeholder="Enter your password" className="border border-zinc-900 rounded-md p-2 w-full" />
+                <input type="password" value={lpassword} onChange={(e) => setLpassword(e.target.value)} name="password" required placeholder="Enter your password" className="border border-zinc-900 rounded-md p-2 w-full" />
               </div>
 
               <div className="w-full mb-6 text-right">

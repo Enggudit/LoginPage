@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import LoginHomeNav from '../components/loginhomenav'
-
+import { Link } from "react-router-dom";
 export default function EditProfile() {
   const [avatar, setAvatar] = useState(null);
 
@@ -12,8 +12,13 @@ export default function EditProfile() {
     }
   };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Handle form submission logic here
+    }
+
   return (
-    <div className="bg-zinc-400 w-screen h-full pb-10">
+    <div className="bg-zinc-400 w-screen h-full pb-10 overflow-hidden">
         <LoginHomeNav />
         <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -36,7 +41,7 @@ export default function EditProfile() {
                     <input type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
                 </label>
             </div>
-            <form className="space-y-5">
+            <form className="space-y-5" onSubmit={handleSubmit}>
                 <div className="flex flex-col">
                     <label htmlFor="name" className="text-gray-700 font-medium mb-1">Name</label>
                     <input
@@ -72,15 +77,13 @@ export default function EditProfile() {
                 >
                 Save Changes
                 </motion.button>
-
-                {/* Update Password Button */}
                 <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 type="button"
                 className="w-full py-2 px-4 bg-gray-100 text-blue-600 rounded-xl font-semibold border border-blue-200 hover:bg-gray-200 transition"
                 >
-                Update Password
+                <Link to="/login-update-password">Update Password</Link>
                 </motion.button>
             </form>
         </motion.div>

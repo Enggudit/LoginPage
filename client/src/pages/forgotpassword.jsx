@@ -1,14 +1,45 @@
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useDispatch, useSelector } from 'react-redux';
+import { forgotPassword } from '../store/slices/authSlice';
+import { toast } from 'react-toastify';
+import { resetAuthSlice } from '../store/slices/authSlice';
+import { Navigate, useNavigate } from 'react-router-dom';
+
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const {loading, error, message, user, isAuthenticated} = useSelector((state) => state.auth);
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle sending password reset email logic here
-    alert(`Password reset link sent to: ${email}`);
+    dispatch(forgotPassword(email));
   };
+
+  useEffect(() => {
+    if (message) {
+      toast(message);
+      dispatch(resetAuthSlice());
+    }
+    if (error) {    
+      if (Array.isArray(error)) {
+        error.forEach((errMsg) => toast.error(errMsg));
+      } else {
+        toast.error(error);
+      }
+    
+      dispatch(resetAuthSlice());
+    }
+    
+    
+  }, [error, message, user, dispatch, navigate, email, isAuthenticated]);
+  
+  if(isAuthenticated){
+    return <Navigate to={"/"} />;
+  }
 
   return (
     <div className="bg-zinc-500 w-screen h-screen overflow-hidden bg-gradient-to-br from-gray-400 to-gray-800 px-4">
@@ -45,6 +76,7 @@ function ForgotPassword() {
             whileTap={{ scale: 0.95 }}
             type="submit"
             className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            disabled={loading ? true : false}
           >
             Send Reset Link
           </motion.button>

@@ -43,6 +43,8 @@ const authSlice = createSlice({
             State.loading = false;
             State.isAuthenticated = true;
             State.user = action.payload.user;
+            State.message = action.payload.message;
+            State.error = null;
         },
         loginRequest(State){
             State.loading = true;
@@ -155,8 +157,8 @@ export const register = (data) => async(dispatch) => {
     }
 };
 
-
 export const otpVerification = (email, otp) => async(dispatch) =>{
+    console.log(email, otp)
     dispatch(authSlice.actions.otpVerificationRequest());
     await axios.post("http://localhost:4000/api/v1/auth/verify-otp", {email, otp}, {
         withCredentials: true,
@@ -178,7 +180,7 @@ export const login = (data) => async(dispatch) =>{
             'Content-Type': 'application/json',
         },
     }).then(res =>{
-        dispatch(authSlice.actions.loginSuccess(res.data));
+        dispatch(authSlice.actions.loginSuccess(res.data.message));
     }).catch(error =>{
         dispatch(authSlice.actions.loginFail(error.response.data.message));
     })
@@ -209,34 +211,38 @@ export const getUser = () => async(dispatch) =>{
 };
 
 export const forgotPassword = (email) => async(dispatch) =>{
+    
     dispatch(authSlice.actions.forgotPasswordRequest());
+    
     await axios.post("http://localhost:4000/api/v1/auth/password/forgot",{email}, {
         withCredentials: true,
         headers: {
             'Content-Type': 'application/json',
         },
     }).then(res =>{
-        dispatch(authSlice.actions.forgotPasswordSuccess(res.data));
+        dispatch(authSlice.actions.forgotPasswordSuccess(res.data.message));
     }).catch(error =>{
         dispatch(authSlice.actions.forgotPasswordFail(error.response.data.message));
     })
 };
 
-export const resetPassword = (data, token) => async(dispatch) =>{
+export const resetPassword = (formData, token) => async (dispatch) => {
     dispatch(authSlice.actions.resetPasswordRequest());
-    await axios.put(`http://localhost:4000/api/v1/auth/password/reset/${token}`,{data, token}, {
-        withCredentials: true,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    }).then(res =>{
-        dispatch(authSlice.actions.resetPasswordSuccess(res.data));
-    }).catch(error =>{
-        dispatch(authSlice.actions.resetPasswordFail(error.response.data.message));
-    })
-};
+    await axios.put(`http://localhost:4000/api/v1/auth/password/reset/${token}`, formData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'multipart/form-data',  // Important: multipart
+      },
+    }).then(res => {
+      dispatch(authSlice.actions.resetPasswordSuccess(res.data.message));
+    }).catch(error => {
+      dispatch(authSlice.actions.resetPasswordFail(error.response.data.message));
+    });
+  };
+  
 
 export const updatePassword = (data) => async(dispatch) =>{
+    
     dispatch(authSlice.actions.updatePasswordRequest());
     await axios.put('http://localhost:4000/api/v1/auth/password/Update',data, {
         withCredentials: true,

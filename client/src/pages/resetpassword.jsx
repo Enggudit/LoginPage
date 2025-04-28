@@ -1,20 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useParams } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { resetPassword, resetAuthSlice } from '../store/slices/authSlice';
+import { useNavigate } from 'react-router';
+import { Navigate } from 'react-router-dom';
+
 
 export default function ResetPassword() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const {token} = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error, message, user, isAuthenticated} = useSelector((state) => state.auth);
+
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-
-    // Handle actual password reset logic here
-    alert("Password has been reset successfully!");
+    const formData = new FormData();
+    formData.append("password", newPassword);
+    formData.append("confirmPassword", confirmPassword); 
+    dispatch(resetPassword(formData, token));
   };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
+
+  useEffect(() => {
+  if (isAuthenticated) {
+    toast.success("Password Change Sucessfully");
+
+    setTimeout(() => {
+      navigate("/");
+      dispatch(resetAuthSlice());
+    }, 1000); // wait 1 second before navigating
+  }
+
+  if (error) {    
+    if (Array.isArray(error)) {
+      error.forEach((errMsg) => toast.error(errMsg));
+    } else {
+      toast.error(error);
+    }
+    dispatch(resetAuthSlice());
+  }
+}, [error, message, user, dispatch, navigate]);
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-400 to-gray-800 px-4">
