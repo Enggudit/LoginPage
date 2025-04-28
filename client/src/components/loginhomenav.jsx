@@ -74,9 +74,7 @@ function LoginHome() {
         <h1 className="text-xl text-white font-semibold pb-2 border-b border-white/30 hover:text-amber-400 transition-all cursor-pointer">
           <Link to="/loginhome">Home</Link>
         </h1>
-        <h1 className="text-xl text-white font-semibold pb-2 border-b border-white/30 hover:text-amber-400 transition-all cursor-pointer">
-          <Link to="/login-update-profile">Edit Profile</Link>
-        </h1>
+        
         <h1 className="text-xl text-white font-semibold pb-2 border-b border-white/30 hover:text-amber-400 transition-all cursor-pointer"
         >
           <Link to="/login-update-password">Update Password</Link>
